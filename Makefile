@@ -1,3 +1,8 @@
+.PHONY: setup
+.PHONY: createcandidate
+.PHONY: viewcandidate
+.PHONY: dropcandidate
+
 setup:
 	-docker stop etcd
 	-docker stop postgres
@@ -18,11 +23,22 @@ setup:
 #
 # WAYS TO USE PSQL
 # 
-#mydb:
-#	docker run --link postgres:postgres -it psql /usr/bin/psql -U postgres fart
 
-#dropdb
-#	docker run --link postgres:postgres -it psql /usr/bin/dropdb -U postgres fart
+viewcandidate:
+	docker run --link postgres:postgres -it psql /usr/bin/psql -U postgres candidate
 
-#createdb
-#	docker run --link postgres:postgres -it psql /usr/bin/createdb -U postgres fart
+dropcandidate:
+	docker run --link postgres:postgres -it psql /usr/bin/dropdb -U postgres candidate
+
+createcandidate:
+	docker run --link postgres:postgres -it psql /usr/bin/createdb -U postgres candidate
+
+push: setup
+	docker tag postgres iansmith/service-postgres	
+	docker tag etcd iansmith/service-etcd
+	docker tag psql iansmith/service-psql
+	docker tag gotooling iansmith/service-gotooling
+	docker push iansmith/service-postgres
+	docker push iansmith/service-etcd
+	docker push iansmith/service-psql
+	docker push iansmith/service-gotooling
